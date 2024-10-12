@@ -1,0 +1,12 @@
+---
+layout: default
+---
+
+{% for a in site.data.michael %}
+  <article>
+    <strong>{{ a.date }} - {{ a.title }}</strong>
+    <div>
+      {{ a.text }}
+    </div>
+  </article>
+{% endfor %}
