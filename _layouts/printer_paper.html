@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+  {%- include head.html -%}
+
+  <style>
+    body {
+      position: relative;
+    }
+    .site-header {
+      background: white;
+    }
+    .perforations {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 31px;
+      background: radial-gradient(#575450 6px, transparent 7px) repeat-y;
+      background-size: 30px 30px;
+      box-sizing: border-box;
+    }
+    .perforations-left {
+      left: 0;
+      border-right: 1px dotted #ccc;
+    }
+    .perforations-right {
+      right: 0;
+      border-left: 1px dotted #ccc;
+    }
+  </style>
+
+  <body>
+
+    <div class='perforations perforations-left'></div>
+
+    <div class='perforations perforations-right'></div>
+
+    {%- include header.html -%}
+
+    <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        {{ content }}
+      </div>
+    </main>
+
+    {%- include footer.html -%}
+
+  </body>
+
+</html>
+
