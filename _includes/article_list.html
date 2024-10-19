@@ -1,0 +1,31 @@
+<style>
+    .sticky {
+        position: -webkit-sticky;
+        position: -moz-sticky;
+        position: -o-sticky;
+        position: -ms-sticky;
+        position: sticky;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: block;
+        z-index: 1;
+        background: #999;
+        color: #fff;
+        padding: 10px 20px;
+    }
+</style>
+
+{% assign articles = include.articles | sort: "date" | reverse %}
+
+{% for a in articles %}
+  <article>
+    <h3 class="sticky">{{ a.date }} - {{ a.title }}</h3>
+    <em>{{ a.author }},</em> <strong>{{ a.pub | join: ", " }}</strong>
+    <br>
+    <br>
+    <div>
+      {{ a.text }}
+    </div>
+  </article>
+{% endfor %}

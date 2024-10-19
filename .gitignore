@@ -4,3 +4,9 @@ _site
 .jekyll-metadata
 vendor
 Gemfile.lock
+.ipynb_checkpoints
+bin
+etc
+lib
+pyvenv.cfg
+share
