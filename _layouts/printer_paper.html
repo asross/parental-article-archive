@@ -4,8 +4,19 @@
   {%- include head.html -%}
 
   <style>
+    @font-face {
+      font-family: nyt-cheltenham;
+      src: url('/nyt-cheltenham-normal.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: nyt-cheltenham;
+      font-weight: bold;
+      src: url('/nyt-cheltenham-bold.ttf') format('truetype');
+    }
     body {
       position: relative;
+      font-family: nyt-cheltenham, sans-serif;
+      font-size: 20px;
     }
     .site-header {
       background: white;
@@ -27,6 +38,15 @@
       right: 0;
       border-left: 1px dotted #ccc;
     }
+    .controls {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      padding: 1rem;
+      background: white;
+      border-left: 1px solid #ccc;
+      border-top: 1px solid #ccc;
+    }
   </style>
 
   <body>
@@ -37,7 +57,7 @@
 
     {%- include header.html -%}
 
-    <main class="page-content" aria-label="Content">
+    <main class="page-content" aria-label="Content" id="#top">
       <div class="wrapper">
         {{ content }}
       </div>

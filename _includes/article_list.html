@@ -5,22 +5,93 @@
         position: -o-sticky;
         position: -ms-sticky;
         position: sticky;
-        top: 0;
         left: 0;
         right: 0;
         display: block;
         z-index: 1;
-        background: #999;
+        background: #222;
         color: #fff;
         padding: 10px 20px;
+        top: 62px;
+    }
+
+    .site-header {
+      position: fixed;
+      width: 100%;
+      height: 56px;
+    }
+
+    .page-content {
+      margin-top: 56px;
+    }
+
+    small a {
+      color: lightblue !important
+    }
+    small {
+      font-size: 0.8em;
+    }
+
+    #loading {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.8);
+      z-index: 1000;
+      text-align: center;
+      padding-top: 20%;
+    }
+
+    .filters {
+      position: fixed;
+      left: 0;
+      top: 0;
+      padding: 1em;
+      background: white;
+      z-index: 100;
+      width: 200px;
+      top: 62px;
+      left: 32px;
+
     }
 </style>
+
+<div class="filters">
+  <label>Show articles 
+    from <input id="min-year" type="number" min="1000" max="3000" placeholder="1970"/> 
+    to <input id="max-year" type="number" min="1000" max="3000" placeholder="2024"/> 
+    with <input id='keyword' type="text" placeholder="keywords"/></label>
+    <br>
+    <button id="filter">Filter</button>
+    <button onclick="location.reload()">Reset</button>
+</div>
+
+<div id="loading">Loading...</div>
 
 {% assign articles = include.articles | sort: "date" | reverse %}
 
 {% for a in articles %}
-  <article>
-    <h3 class="sticky">{{ a.date }} - {{ a.title }}</h3>
+  <article id="article-{{ a.id }}">
+    <h3 class="sticky">{{ a.date }} - {{ a.title }} 
+      <small>
+          {% unless forloop.first %}
+            {% assign prev = forloop.index0 | minus: 1 %}
+            <a href="#article-{{ articles[prev].id }}">prev</a> |
+          {% endunless %}
+
+          {% unless forloop.last %}
+            {% assign next = forloop.index0 | plus: 1 %}
+            <a href="#article-{{ articles[next].id }}">next</a> |
+          {% endunless %}
+
+          <a href="#top">top</a> |
+
+          <a href="javascript:navigator.clipboard.writeText(`${location.href.replace(/#.*$/,'')}#article-{{ a.id }}`)">copy</a>
+      </small>
+    </h3>
     <em>{{ a.author }},</em> <strong>{{ a.pub | join: ", " }}</strong>
     <br>
     <br>
@@ -29,3 +100,39 @@
     </div>
   </article>
 {% endfor %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const loading = document.getElementById('loading');
+    loading.style.display = 'none';
+
+    const minYear = document.getElementById('min-year');
+    const maxYear = document.getElementById('max-year');
+    const keyword = document.getElementById('keyword');
+    const articles = document.querySelectorAll('article');
+    const filter = document.getElementById('filter');
+
+    filter.addEventListener('click', function() {
+      loading.style.display = 'block';
+
+      const min = minYear.value && new Date(`${minYear.value}-01-01`).getTime();
+      const max = maxYear.value && new Date(`${maxYear.value}-01-01`).getTime();
+      const kw = keyword.value.toLowerCase();
+
+      let count = 0;
+      const total = articles.length;
+
+      articles.forEach(a => {
+        setTimeout(() => {
+          const date = new Date(a.querySelector('h3').textContent.split(' - ')[0]).getTime();
+          const text = a.querySelector('div').textContent.toLowerCase();
+          a.style.display = (date >= min || !min) && (date <= max || !max) && (text.includes(kw) || !kw) ? 'block' : 'none';
+          count += 1;
+          if (count === total) {
+              loading.style.display = 'none';
+          }
+        }, 1);
+      });
+    });
+  });
+</script>
