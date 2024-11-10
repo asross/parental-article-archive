@@ -73,7 +73,7 @@
     </select>
     with <input id='keyword' type="text" placeholder="keywords"/></label>
     <br>
-    <button id="filter">Filter</button>
+    <button id="filter" disabled>Filter</button>
     <button onclick="location.reload()">Reset</button>
 </div>
 
@@ -84,28 +84,38 @@
 <div id="articles">
   {% for a in articles %}
     <article id="article-{{ a.id }}">
-      <h3 class="sticky">{{ a.date }} - {{ a.title }} 
+      <h3 class="sticky">
         <small>
             {% unless forloop.first %}
               {% assign prev = forloop.index0 | minus: 1 %}
               <a href="#article-{{ articles[prev].id }}">prev</a> |
+            {% else %}
+              <span style='cursor: not-allowed; opacity: 0.5;'>prev</span> |
             {% endunless %}
 
             {% unless forloop.last %}
               {% assign next = forloop.index0 | plus: 1 %}
               <a href="#article-{{ articles[next].id }}">next</a> |
+            {% else %}
+              <span style='cursor: not-allowed; opacity: 0.5;'>next</span> |
             {% endunless %}
 
             <a href="#top">top</a> |
 
-            <a href="javascript:navigator.clipboard.writeText(`${location.href.replace(/#.*$/,'')}#article-{{ a.id }}`)">copy</a>
+            <a href="javascript:navigator.clipboard.writeText(`${location.href.replace(/#.*$/,'')}#article-{{ a.id }}`)" class='copy-link'>copy link</a>
         </small>
+        <br>
+        {{ a.date }} - {{ a.title }} 
       </h3>
       <em>{{ a.author }},</em> <strong>{{ a.pub | join: ", " }}</strong>
       <br>
       <br>
       <div>
-        {{ a.text }}
+        {% if a.text_cleaned %}
+          {{ a.text_cleaned }}
+        {% else %}
+          {{ a.text }}
+        {% endif %}
       </div>
     </article>
   {% endfor %}
@@ -124,7 +134,24 @@
     const order = document.getElementById('order');
     const articleWrapper = document.getElementById('articles');
 
+    const enable = () => filter.removeAttribute('disabled');
+
+    for (const input of [minYear, maxYear, keyword])
+      input.addEventListener('keydown', enable);
+    order.addEventListener('change', enable);
+
+    Array.from(document.getElementsByClassName('copy-link')).forEach(a => {
+      a.addEventListener('click', () => {
+        const origText = a.text;
+        a.text = 'copied!';
+        setTimeout(() => {
+          a.text = origText
+        }, 2000);
+      });
+    });
+
     filter.addEventListener('click', function() {
+      filter.setAttribute('disabled', 'disabled');
       loading.style.display = 'block';
 
       const min = minYear.value && new Date(`${minYear.value}-01-01`).getTime();

@@ -10,3 +10,4 @@ etc
 lib
 pyvenv.cfg
 share
+**/*.bak
