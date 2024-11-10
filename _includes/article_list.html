@@ -19,6 +19,7 @@
       position: fixed;
       width: 100%;
       height: 56px;
+      z-index: 2;
     }
 
     .page-content {
@@ -107,7 +108,7 @@
         <br>
         {{ a.date }} - {{ a.title }} 
       </h3>
-      <em>{{ a.author }},</em> <strong>{{ a.pub | join: ", " }}</strong>
+      <em>{{ a.author }},</em> <strong title="{{ a.pub | join: ', ' }}">{{ a.pub | join: ", " | truncate: 100 }}</strong>
       <br>
       <br>
       <div>
