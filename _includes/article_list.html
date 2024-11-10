@@ -50,12 +50,16 @@
       left: 0;
       top: 0;
       padding: 1em;
-      background: white;
+      background: rgba(255, 255, 255, 0.8);
       z-index: 100;
       width: 200px;
       top: 62px;
       left: 32px;
+    }
 
+    #articles.oldest {
+      display: flex;
+      flex-direction: column-reverse;
     }
 </style>
 
@@ -63,6 +67,10 @@
   <label>Show articles 
     from <input id="min-year" type="number" min="1000" max="3000" placeholder="1970"/> 
     to <input id="max-year" type="number" min="1000" max="3000" placeholder="2024"/> 
+    <select id="order">
+      <option value="newest">newest first</option>
+      <option value="oldest">oldest first</option>
+    </select>
     with <input id='keyword' type="text" placeholder="keywords"/></label>
     <br>
     <button id="filter">Filter</button>
@@ -73,33 +81,35 @@
 
 {% assign articles = include.articles | sort: "date" | reverse %}
 
-{% for a in articles %}
-  <article id="article-{{ a.id }}">
-    <h3 class="sticky">{{ a.date }} - {{ a.title }} 
-      <small>
-          {% unless forloop.first %}
-            {% assign prev = forloop.index0 | minus: 1 %}
-            <a href="#article-{{ articles[prev].id }}">prev</a> |
-          {% endunless %}
+<div id="articles">
+  {% for a in articles %}
+    <article id="article-{{ a.id }}">
+      <h3 class="sticky">{{ a.date }} - {{ a.title }} 
+        <small>
+            {% unless forloop.first %}
+              {% assign prev = forloop.index0 | minus: 1 %}
+              <a href="#article-{{ articles[prev].id }}">prev</a> |
+            {% endunless %}
 
-          {% unless forloop.last %}
-            {% assign next = forloop.index0 | plus: 1 %}
-            <a href="#article-{{ articles[next].id }}">next</a> |
-          {% endunless %}
+            {% unless forloop.last %}
+              {% assign next = forloop.index0 | plus: 1 %}
+              <a href="#article-{{ articles[next].id }}">next</a> |
+            {% endunless %}
 
-          <a href="#top">top</a> |
+            <a href="#top">top</a> |
 
-          <a href="javascript:navigator.clipboard.writeText(`${location.href.replace(/#.*$/,'')}#article-{{ a.id }}`)">copy</a>
-      </small>
-    </h3>
-    <em>{{ a.author }},</em> <strong>{{ a.pub | join: ", " }}</strong>
-    <br>
-    <br>
-    <div>
-      {{ a.text }}
-    </div>
-  </article>
-{% endfor %}
+            <a href="javascript:navigator.clipboard.writeText(`${location.href.replace(/#.*$/,'')}#article-{{ a.id }}`)">copy</a>
+        </small>
+      </h3>
+      <em>{{ a.author }},</em> <strong>{{ a.pub | join: ", " }}</strong>
+      <br>
+      <br>
+      <div>
+        {{ a.text }}
+      </div>
+    </article>
+  {% endfor %}
+</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -111,6 +121,8 @@
     const keyword = document.getElementById('keyword');
     const articles = document.querySelectorAll('article');
     const filter = document.getElementById('filter');
+    const order = document.getElementById('order');
+    const articleWrapper = document.getElementById('articles');
 
     filter.addEventListener('click', function() {
       loading.style.display = 'block';
@@ -118,6 +130,8 @@
       const min = minYear.value && new Date(`${minYear.value}-01-01`).getTime();
       const max = maxYear.value && new Date(`${maxYear.value}-01-01`).getTime();
       const kw = keyword.value.toLowerCase();
+
+      articleWrapper.className = order.value;
 
       let count = 0;
       const total = articles.length;
