@@ -114,6 +114,10 @@
       <div>
         {% if a.text_cleaned %}
           {{ a.text_cleaned }}
+          <details>
+            <summary>original article</summary>
+            {{ a.text }}
+          </details>
         {% else %}
           {{ a.text }}
         {% endif %}
