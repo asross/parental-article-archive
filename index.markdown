@@ -33,12 +33,12 @@ layout: page
 
     @font-face {
       font-family: nyt-cheltenham;
-      src: url('/nyt-cheltenham-normal.ttf') format('truetype');
+      src: url('{{ site.baseurl }}/nyt-cheltenham-normal.ttf') format('truetype');
     }
     @font-face {
       font-family: nyt-cheltenham;
       font-weight: bold;
-      src: url('/nyt-cheltenham-bold.ttf') format('truetype');
+      src: url('{{ site.baseurl }}/nyt-cheltenham-bold.ttf') format('truetype');
     }
     body {
       font-family: nyt-cheltenham, sans-serif;
@@ -53,12 +53,12 @@ layout: page
 
 <div id='head-image-wrapper'>
     <img src='momdad.png' id='head-image' />
-    <a href='/michael' class='parent-link' id='michael-link'> </a>
-    <a href='/barbara' class='parent-link' id='barbara-link'> </a>
+    <a href='{{ site.baseurl }}/michael' class='parent-link' id='michael-link'> </a>
+    <a href='{{ site.baseurl }}/barbara' class='parent-link' id='barbara-link'> </a>
 </div>
 
 <p>
-    This website contains an archive of digitized articles written by <a href='/barbara'>Barbara Slavin</a> and <a href='/michael'>Michael Ross</a>, drawn from the following publications:
+    This website contains an archive of digitized articles written by <a href='{{ site.baseurl }}/barbara'>Barbara Slavin</a> and <a href='{{ site.baseurl }}/michael'>Michael Ross</a>, drawn from the following publications:
 </p>
 
 {% assign thresh = 20 %}
