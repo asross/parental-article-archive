@@ -1,4 +1,9 @@
 <style>
+    :root {
+       --sticky-nav-top: 62px;
+       --filter-height: 100px;
+    }
+
     .sticky {
         position: -webkit-sticky;
         position: -moz-sticky;
@@ -10,9 +15,10 @@
         display: block;
         z-index: 1;
         background: #222;
-        color: #fff;
+        color: #fdfdfd;
         padding: 10px 20px;
-        top: 62px;
+        top: var(--sticky-nav-top);
+        margin-bottom: 0;
     }
 
     .site-header {
@@ -54,7 +60,7 @@
       background: rgba(255, 255, 255, 0.8);
       z-index: 100;
       width: 200px;
-      top: 62px;
+      top: var(--sticky-nav-top);
       left: 32px;
     }
 
@@ -62,9 +68,27 @@
       display: flex;
       flex-direction: column-reverse;
     }
+
+    .author-pub {
+      margin-top: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    @media only screen and (max-width: 1250px) {
+      .filters {
+        background: #fdfdfd;
+        position: sticky;
+        width: auto;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .sticky {
+        top: calc(var(--filter-height) + var(--sticky-nav-top));
+      }
+    }
 </style>
 
-<div class="filters">
+<div id='filters' class="filters">
   <label>Show articles 
     from <input id="min-year" type="number" min="1000" max="3000" placeholder="1970"/> 
     to <input id="max-year" type="number" min="1000" max="3000" placeholder="2024"/> 
@@ -108,9 +132,9 @@
         <br>
         {{ a.date }} - {{ a.title }} 
       </h3>
-      <em>{{ a.author }},</em> <strong title="{{ a.pub | join: ', ' }}">{{ a.pub | join: ", " | truncate: 100 }}</strong>
-      <br>
-      <br>
+      <div class="author-pub">
+        <em>{{ a.author }},</em> <strong title="{{ a.pub | join: ', ' }}">{{ a.pub | join: ", " | truncate: 100 }}</strong>
+      </div>
       <div>
         {% if a.text_cleaned %}
           {{ a.text_cleaned }}
@@ -128,6 +152,10 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    const adjustFilterHeight = () => document.documentElement.style.setProperty('--filter-height', `${document.getElementById('filters').offsetHeight}px`);
+    window.addEventListener('resize', adjustFilterHeight);
+    adjustFilterHeight();
+
     const loading = document.getElementById('loading');
     loading.style.display = 'none';
 
