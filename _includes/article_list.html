@@ -39,6 +39,20 @@
       font-size: 0.8em;
     }
 
+    @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
     #loading {
       display: block;
       position: fixed;
@@ -50,6 +64,11 @@
       z-index: 1000;
       text-align: center;
       padding-top: 20%;
+    }
+
+    .loading-text {
+      display: inline-block;
+      animation: blink 1s infinite;
     }
 
     .filters {
@@ -106,7 +125,9 @@
     <button id="reset" disabled>Reset</button>
 </div>
 
-<div id="loading">Loading...</div>
+<div id="loading">
+  Loading<span class='loading-text'>&hellip;</span>
+</div>
 
 {% assign articles = include.articles | sort: "date" | reverse %}
 
