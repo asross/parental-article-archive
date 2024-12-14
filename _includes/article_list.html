@@ -46,7 +46,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.9);
       z-index: 1000;
       text-align: center;
       padding-top: 20%;
@@ -74,6 +74,10 @@
       margin-bottom: 2rem;
     }
 
+    details {
+      display: none;
+    }
+
     @media only screen and (max-width: 1250px) {
       .filters {
         background: #fdfdfd;
@@ -99,7 +103,7 @@
     with <input id='keyword' type="text" placeholder="keywords"/></label>
     <br>
     <button id="filter" disabled>Filter</button>
-    <button onclick="location.reload()">Reset</button>
+    <button id="reset" disabled>Reset</button>
 </div>
 
 <div id="loading">Loading...</div>
@@ -150,6 +154,8 @@
   {% endfor %}
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const adjustFilterHeight = () => document.documentElement.style.setProperty('--filter-height', `${document.getElementById('filters').offsetHeight}px`);
@@ -166,8 +172,11 @@
     const filter = document.getElementById('filter');
     const order = document.getElementById('order');
     const articleWrapper = document.getElementById('articles');
+    const reset = document.getElementById('reset');
 
-    const enable = () => filter.removeAttribute('disabled');
+    const enable = () => {
+      filter.removeAttribute('disabled');
+    };
 
     for (const input of [minYear, maxYear, keyword])
       input.addEventListener('keydown', enable);
@@ -183,13 +192,27 @@
       });
     });
 
-    filter.addEventListener('click', function() {
+    const filterArticles = function(scrollToHash) {
       filter.setAttribute('disabled', 'disabled');
       loading.style.display = 'block';
 
       const min = minYear.value && new Date(`${minYear.value}-01-01`).getTime();
       const max = maxYear.value && new Date(`${maxYear.value}-01-01`).getTime();
       const kw = keyword.value.toLowerCase();
+
+      const params = new URLSearchParams();
+      if (min) params.set('min', minYear.value);
+      if (max) params.set('max', maxYear.value);
+      if (kw) params.set('kw', keyword.value);
+      if (order.value !== 'newest') params.set('order', order.value);
+
+      if (params.toString()) {
+        reset.removeAttribute('disabled');
+      } else {
+        reset.setAttribute('disabled', 'disabled');
+      }
+
+      history.replaceState(null, '', '?' + params.toString() + location.hash);
 
       articleWrapper.className = order.value;
 
@@ -199,14 +222,50 @@
       articles.forEach(a => {
         setTimeout(() => {
           const date = new Date(a.querySelector('h3').textContent.split(' - ')[0]).getTime();
-          const text = a.querySelector('div').textContent.toLowerCase();
+          const text = a.textContent.toLowerCase();
           a.style.display = (date >= min || !min) && (date <= max || !max) && (text.includes(kw) || !kw) ? 'block' : 'none';
+          const markInstance = new Mark(a);
+          markInstance.unmark({
+            done: function() {
+              markInstance.mark(keyword.value);
+            }
+          });
           count += 1;
           if (count === total) {
+              if (scrollToHash && location.hash?.length > 1) {
+                const el = document.getElementById(location.hash.slice(1));
+                el?.scrollIntoView();
+              } else {
+                window.scrollTo(0, 0);
+              }
+
               loading.style.display = 'none';
           }
         }, 1);
       });
+    };
+
+    filter.addEventListener('click', filterArticles);
+    minYear.addEventListener('keypress', e => { if (e.key === 'Enter') filterArticles(); });
+    maxYear.addEventListener('keypress', e => { if (e.key === 'Enter') filterArticles(); });
+    keyword.addEventListener('keypress', e => { if (e.key === 'Enter') filterArticles(); });
+
+    if (location.search) {
+      const params = new URLSearchParams(location.search);
+      if (params.has('min')) minYear.value = params.get('min');
+      if (params.has('max')) maxYear.value = params.get('max');
+      if (params.has('kw')) keyword.value = params.get('kw');
+      if (params.has('order')) order.value = params.get('order');
+    }
+    
+    filterArticles(true);
+
+    reset.addEventListener('click', () => {
+      minYear.value = '';
+      maxYear.value = '';
+      keyword.value = '';
+      order.value = 'newest';
+      filterArticles();
     });
   });
 </script>

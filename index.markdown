@@ -84,7 +84,7 @@ layout: page
             {% assign num = num | plus: 1 %}
         {% else %}
             {% if num >= thresh %}
-                <li style='order: {{ num }}'><strong>{{ current }}</strong>: {{ num }} articles</li>
+                <li style='order: {{ num }}'><strong>{{ current | split: '/' | first | split: '-' | last | replace: 'TODAY', 'Today' }}</strong>: {{ num }} articles</li>
             {% else %}
                 {% assign others = others | plus: num %}
                 {% assign num_others = num_others | plus: 1 %}
